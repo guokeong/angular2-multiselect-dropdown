@@ -110,14 +110,10 @@ export class AngularMultiSelect implements OnInit, ControlValueAccessor, OnChang
         if (this.settings.groupBy) {
             this.groupedData = this.transformData(this.data, this.settings.groupBy);
         }
-        this.totalRows = (this.data && this.data.length);
-        this.cachedItems = this.data;
         this.screenItemsLen = Math.ceil(this.settings.maxHeight / this.itemHeight);
         this.cachedItemsLen = this.screenItemsLen * 3;
-        this.totalHeight = this.itemHeight * this.totalRows;
-        this.maxBuffer = this.screenItemsLen * this.itemHeight;
         this.lastScrolled = 0;
-        this.renderChunk(0, this.cachedItemsLen / 2);
+        this.renderData();
         if (this.settings.position == 'top') {
             setTimeout(() => {
                 this.selectedListHeight = { val: 0 };
@@ -128,6 +124,7 @@ export class AngularMultiSelect implements OnInit, ControlValueAccessor, OnChang
     }
     ngOnChanges(changes: SimpleChanges) {
         if (changes.data && !changes.data.firstChange) {
+            this.renderData();
             if (this.settings.groupBy) {
                 this.groupedData = this.transformData(this.data, this.settings.groupBy);
                 if (this.data.length == 0) {
@@ -157,6 +154,15 @@ export class AngularMultiSelect implements OnInit, ControlValueAccessor, OnChang
             this.cdr.detectChanges();
         }
     }
+
+    renderData() {
+        this.totalRows = (this.data && this.data.length);
+        this.cachedItems = this.data;
+        this.totalHeight = this.itemHeight * this.totalRows;
+        this.maxBuffer = this.screenItemsLen * this.itemHeight;
+        this.renderChunk(0, this.cachedItemsLen / 2);
+    }
+    
     onItemClick(item: any, index: number, evt: Event) {
         if (this.settings.disabled) {
             return false;
